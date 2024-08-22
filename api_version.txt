@@ -1,0 +1,23 @@
+#!/bin/bash
+
+read -s -p "Enter password for Servers: " server_password
+echo
+
+server_user="anthony_it"
+server_ips=("10.10.2.3")
+updated="1.12.13.7" 
+
+path="/opt/myplex/myplex_service/myplex_service/settings.py"
+
+for ip in "${server_ips[@]}"; do
+    echo "Checking settings for IP: $ip"
+    
+    # Run the command to check the file or retrieve its contents
+    version=$(sshpass -p "$server_password" ssh $server_user@$ip "grep -oP 'API_V\d+' $path")
+    
+    if [[ "$version" == "API_V$updated" ]]; then
+        echo "IP $ip: Version is correctly reflected."
+    else
+        echo "IP $ip: Version not reflected (current version: $version)."
+    fi
+done

@@ -1,0 +1,22 @@
+#!/bin/bash
+
+server_user="anthony_it"
+server_ips=("192.168.30.65")
+
+echo "Enter the version:"
+read version
+
+path="/opt/myplex/myplex_service/myplex_service/settings.py"
+
+for ip in "${server_ips[@]}"; do
+    echo "Checking settings for IP: $ip"
+
+    # Fetch the settings file and search for the API_VERSION version
+    fetched_version=$(ssh "$server_user@$ip" "grep 'API_VERSION' $path | awk -F'\"' '{print \$2}'")
+
+    if [[ "$fetched_version" == "$version" ]]; then
+        echo "IP $ip: Version is correctly reflected."
+    else
+        echo "IP $ip: Version not reflected (current version: $fetched_version)."
+    fi
+done

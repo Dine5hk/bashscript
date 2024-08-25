@@ -1,0 +1,32 @@
+groups:
+  - name: example-alerts
+    rules:
+      # Disk root usage alert
+      - alert: DiskRootUsageHigh
+        expr: (node_filesystem_usage{mountpoint="/"} > 0.8)
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Disk root usage is above 80%"
+          description: "The disk root usage is currently at {{ $value }}. Please check the disk usage."
+
+      # CPU utilization alert
+      - alert: HighCPUUtilization
+        expr: (rate(node_cpu_seconds_total{mode="idle"}[5m]) < 0.5)
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU utilization is above 50%"
+          description: "The CPU utilization is currently at {{ $value }}. Consider investigating the processes."
+
+      # Health check alert
+      - alert: ServiceHealthDown
+        expr: up == 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Service health check failed"
+          description: "The health check for the service is down. Please verify the service status."
